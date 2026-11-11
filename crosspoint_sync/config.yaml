@@ -1,0 +1,29 @@
+name: "CrossPoint Sync"
+version: "1.0.0"
+slug: "crosspoint_sync"
+description: "KOSync-compatible sync server for CrossPoint / CrossInk / KOReader e-readers"
+url: "https://github.com/IngoHenning/homeassistant_crosspoint_sync"
+image: "ghcr.io/ingohenning/crosspoint-sync"
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+init: true
+backup: cold
+ports:
+  8080/tcp: 8080
+webui: "http://[HOST]:[PORT:8080]/app/"
+watchdog: "http://[HOST]:[PORT:8080]/healthz"
+options:
+  token_enc_key: ""
+  registration_disabled: false
+  trust_proxy: false
+  allow_http_localhost: false
+  https_hack: false
+schema:
+  token_enc_key: "password?"
+  registration_disabled: bool
+  trust_proxy: bool
+  allow_http_localhost: bool
+  https_hack: bool

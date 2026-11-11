@@ -1,0 +1,23 @@
+configuration:
+  token_enc_key:
+    name: "Credential encryption key"
+    description: "64 hex characters (openssl rand -hex 32). Enables saving credentials for external services. Changing it invalidates all saved service logins."
+  registration_disabled:
+    name: "Disable new registrations"
+    description: "Once your devices have accounts, turn this on to stop anyone from creating one."
+  trust_proxy:
+    name: "Trust X-Forwarded-* headers"
+    description: "Only for a real TLS reverse proxy in front of this app. Never enable when readers can reach port 8080 directly."
+  allow_http_localhost:
+    name: "Allow plain HTTP on localhost"
+    description: "Lets credential saving work when the app is opened via a localhost address (SSH tunnel or a browser on the Home Assistant host). Temporary workaround."
+  https_hack:
+    name: "Unsigned HTTPS hack (enable only if you accept the risks)"
+    description: >-
+      Makes the app believe connector requests arrived over TLS, so credentials for
+      Hardcover, Micro.blog, Readwise, BookFusion and similar services can be saved
+      while you access the app over plain HTTP.
+      RISK: the signal is forged, not earned. Credentials and tokens are still sent
+      over your network unencrypted, and the server cannot distinguish a
+      man-in-the-middle from you. OAuth services that redirect back still fail,
+      because the callback URL has no real TLS. Prefer a TLS reverse proxy instead.

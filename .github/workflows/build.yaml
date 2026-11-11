@@ -1,0 +1,93 @@
+name: Build app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "crosspoint_sync/**"
+      - ".github/workflows/build.yaml"
+  workflow_dispatch:
+
+env:
+  ARCHITECTURES: '["amd64", "aarch64"]'
+  IMAGE_NAME: crosspoint-sync
+  APP_DIR: crosspoint_sync
+
+permissions:
+  contents: read
+
+jobs:
+  init:
+    name: Read version and prepare matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from config.yaml
+        id: version
+        run: |
+          version=$(grep -m1 '^version:' "$APP_DIR/config.yaml" | sed -E 's/^version:[[:space:]]*"?([^"]+)"?.*/\1/')
+          if [ -z "$version" ]; then echo "No version in $APP_DIR/config.yaml" >&2; exit 1; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building version $version"
+
+      - name: Get build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.09.0
+        with:
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
+
+  build:
+    name: Build ${{ matrix.arch }} image
+    needs: init
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.init.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        uses: home-assistant/builder/actions/build-image@2026.09.0
+        with:
+          arch: ${{ matrix.arch }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          context: ./crosspoint_sync
+          image: ${{ matrix.image }}
+          image-tags: |
+            ${{ needs.init.outputs.version }}
+            latest
+          push: "true"
+          version: ${{ needs.init.outputs.version }}
+          labels: |
+            io.hass.type=app
+            io.hass.name=CrossPoint Sync
+            io.hass.description=KOSync-compatible sync server for CrossPoint, CrossInk and KOReader
+            io.hass.url=https://github.com/IngoHenning/homeassistant_crosspoint_sync
+            org.opencontainers.image.licenses=MIT
+
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [init, build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - name: Publish manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.09.0
+        with:
+          architectures: ${{ env.ARCHITECTURES }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ env.IMAGE_NAME }}
+          image-tags: |
+            ${{ needs.init.outputs.version }}
+            latest
