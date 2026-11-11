@@ -23,8 +23,16 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       version: ${{ steps.version.outputs.version }}
+      registry_prefix: ${{ steps.prefix.outputs.registry_prefix }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute lowercase registry prefix
+        id: prefix
+        run: |
+          owner_lc="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "registry_prefix=ghcr.io/${owner_lc}" >> "$GITHUB_OUTPUT"
+          echo "Using ghcr.io/${owner_lc}"
 
       - name: Read version from config.yaml
         id: version
@@ -40,6 +48,7 @@ jobs:
         with:
           architectures: ${{ env.ARCHITECTURES }}
           image-name: ${{ env.IMAGE_NAME }}
+          registry-prefix: ${{ steps.prefix.outputs.registry_prefix }}
 
   build:
     name: Build ${{ matrix.arch }} image
@@ -88,6 +97,7 @@ jobs:
           architectures: ${{ env.ARCHITECTURES }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ${{ env.IMAGE_NAME }}
+          registry-prefix: ${{ needs.init.outputs.registry_prefix }}
           image-tags: |
             ${{ needs.init.outputs.version }}
             latest
