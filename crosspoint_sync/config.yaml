@@ -1,5 +1,5 @@
 name: "CrossPoint Sync"
-version: "1.0.2"
+version: "1.0.3"
 slug: "crosspoint_sync"
 description: "KOSync-compatible sync server for CrossPoint / CrossInk / KOReader e-readers"
 url: "https://github.com/IngoHenning/homeassistant_crosspoint_sync"
