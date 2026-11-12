@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.1
+
+- Added AppArmor
 
 ## 1.0.0
 

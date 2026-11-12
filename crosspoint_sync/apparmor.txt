@@ -1,0 +1,70 @@
+#include <tunables/global>
+
+profile crosspoint_sync flags=(attach_disconnected,mediate_deleted,complain) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # nginx binds 8080 as root, then drops workers to the nginx user
+  capability net_bind_service,
+  capability setuid,
+  capability setgid,
+  capability chown,
+  capability dac_override,
+  capability kill,
+
+  signal (send, receive) set=(kill,term,int,hup,cont,usr1,usr2,winch),
+
+  # Docker's init (config.yaml: init: true)
+  /dev/init rix,
+
+  /dev/urandom r,
+  /dev/random r,
+  /dev/null rw,
+  /dev/zero r,
+  /dev/tty rw,
+
+  # Executables: node, nginx, and the shell utilities run.sh uses
+  /usr/local/bin/node rix,
+  /usr/sbin/nginx rix,
+  /bin/busybox rix,
+  /bin/sh rix,
+  /usr/bin/jq rix,
+  /run.sh rix,
+
+  # App payload (dist/, web/, assets/, extension/, migrations/, package.json)
+  /app/ r,
+  /app/** mr,
+  /app/**/*.node mr,
+
+  # nginx runtime
+  /etc/nginx/** r,
+  /run/nginx/ rw,
+  /run/nginx/** rw,
+  /var/lib/nginx/ rw,
+  /var/lib/nginx/** rw,
+  /var/log/nginx/ rw,
+  /var/log/nginx/** rw,
+
+  # Database and options — the app's only writable state
+  /data/ rw,
+  /data/** rw,
+
+  # Scratch
+  /tmp/ rw,
+  /tmp/** rwk,
+
+  # Outbound HTTPS to Hardcover, Micro.blog, Readwise, BookFusion, ...
+  /etc/ssl/certs/** r,
+  /etc/ssl/openssl.cnf r,
+  /etc/ca-certificates.conf r,
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/group r,
+
+  # Node/libuv introspects the machine
+  /proc/** r,
+  /sys/devices/system/cpu/** r,
+  /sys/fs/cgroup/** r,
+}
