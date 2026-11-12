@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.5
+
+- Updated third party notices
+- Updated documentation
+
+## 1.0.4
+
+- AppArmor profile (`apparmor.txt`) now enforcing, not complain.
+- Container runs with a restrictive profile: only `/data` is writable state,
+  outbound file access limited to CA certificates.
+
 ## 1.0.2
 
 - Set AppArmor to enforce
