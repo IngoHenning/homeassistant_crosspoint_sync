@@ -23,7 +23,8 @@ profile crosspoint_sync flags=(attach_disconnected,mediate_deleted) {
   /dev/zero r,
   /dev/tty rw,
 
-  # Executables: node, nginx, and the shell utilities run.sh uses
+  # Executables: node's entrypoint, node, nginx, and run.sh's utilities
+  /usr/local/bin/docker-entrypoint.sh rix,
   /usr/local/bin/node rix,
   /usr/sbin/nginx rix,
   /bin/busybox rix,

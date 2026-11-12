@@ -66,16 +66,15 @@ nginx -t
 echo "--- X-Forwarded-Proto in generated config ---"
 grep -n 'X-Forwarded-Proto' /etc/nginx/http.d/crosspoint.conf || echo "(none)"
 
-export PORT=8081
-export LISTEN_ADDRESS=127.0.0.1
-
-nginx -g 'daemon on;'
-
-# AppArmor canary — remove after confirming enforcement
+# AppArmor canary — remove once enforcement is confirmed
 if head -c1 /etc/shadow 2>/dev/null; then
   echo "[SECURITY] AppArmor NOT enforcing: /etc/shadow was readable"
 else
   echo "[SECURITY] AppArmor enforcing: /etc/shadow denied"
 fi
 
+export PORT=8081
+export LISTEN_ADDRESS=127.0.0.1
+
+nginx -g 'daemon on;'
 exec node dist/index.js
