@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.0.2
+
+- Set AppArmor to enforce
+
 ## 1.0.1
 
 - Added AppArmor

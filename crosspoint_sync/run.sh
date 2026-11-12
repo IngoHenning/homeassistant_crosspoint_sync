@@ -70,4 +70,12 @@ export PORT=8081
 export LISTEN_ADDRESS=127.0.0.1
 
 nginx -g 'daemon on;'
+
+# AppArmor canary — remove after confirming enforcement
+if head -c1 /etc/shadow 2>/dev/null; then
+  echo "[SECURITY] AppArmor NOT enforcing: /etc/shadow was readable"
+else
+  echo "[SECURITY] AppArmor enforcing: /etc/shadow denied"
+fi
+
 exec node dist/index.js
