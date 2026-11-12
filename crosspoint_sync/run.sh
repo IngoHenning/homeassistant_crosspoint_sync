@@ -61,17 +61,16 @@ EOF
 EOF
 } > /etc/nginx/http.d/crosspoint.conf
 
+if [ ! -s /etc/nginx/http.d/crosspoint.conf ]; then
+  echo "[FATAL] /etc/nginx/http.d/crosspoint.conf was not written" >&2
+  echo "[FATAL] check AppArmor rules for /etc/nginx/http.d/ (needs rw)" >&2
+  exit 1
+fi
+
 echo "[INFO] https_hack=$HACK trust_proxy=$TRUST_PROXY allow_http_localhost=$ALLOW_HTTP_LOCALHOST"
 nginx -t
 echo "--- X-Forwarded-Proto in generated config ---"
 grep -n 'X-Forwarded-Proto' /etc/nginx/http.d/crosspoint.conf || echo "(none)"
-
-# AppArmor canary — remove once enforcement is confirmed
-if head -c1 /etc/shadow 2>/dev/null; then
-  echo "[SECURITY] AppArmor NOT enforcing: /etc/shadow was readable"
-else
-  echo "[SECURITY] AppArmor enforcing: /etc/shadow denied"
-fi
 
 export PORT=8081
 export LISTEN_ADDRESS=127.0.0.1

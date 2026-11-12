@@ -37,18 +37,27 @@ profile crosspoint_sync flags=(attach_disconnected,mediate_deleted) {
   /app/** mr,
   /app/**/*.node mr,
 
+  # nginx config: read the main config, write ONLY the generated http.d file
+  /etc/nginx/ r,
+  /etc/nginx/nginx.conf r,
+  /etc/nginx/mime.types r,
+  /etc/nginx/conf.d/ r,
+  /etc/nginx/conf.d/** r,
+  /etc/nginx/http.d/ rw,
+  /etc/nginx/http.d/** rw,
+
   # nginx runtime
-  /etc/nginx/** r,
   /run/nginx/ rw,
-  /run/nginx/** rw,
+  /run/nginx/** rwk,
   /var/lib/nginx/ rw,
   /var/lib/nginx/** rw,
   /var/log/nginx/ rw,
   /var/log/nginx/** rw,
 
-  # Database and options — the app's only writable state
+  # SQLite database + options.json. k = file-lock permission; without it
+  # every lock attempt fails and SQLite reports "database is locked".
   /data/ rw,
-  /data/** rw,
+  /data/** rwk,
 
   # Scratch
   /tmp/ rw,
