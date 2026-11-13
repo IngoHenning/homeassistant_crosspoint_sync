@@ -1,6 +1,4 @@
-# Upstream CrossPoint Sync 0.1.0 (git tag v0.1.0, commit cf86947)
-# Digest at time of writing: sha256:00ddab035fd5b19b3866da7ff41aba703f45bff82047c370af997425734f313b
-ARG CROSSPOINT_VERSION=0.1.0
+ARG CROSSPOINT_VERSION=0.2.0
 FROM ghcr.io/crosspoint-reader/crosspoint-sync:${CROSSPOINT_VERSION}
 
 ARG BUILD_ARCH

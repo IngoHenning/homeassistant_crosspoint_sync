@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Upstream CrossPoint Sync updated from 0.1.0 to 0.2.0.
+- New: KOReader reading-history uploads, bookmark sync API,
+  KOReader plugin 0.2.0 support.
+- **Database migrations run on first start.** Take a backup before updating.
+
 ## 1.0.5
 
 - Updated third party notices
